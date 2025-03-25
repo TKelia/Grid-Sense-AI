@@ -1,0 +1,20 @@
+RewriteEngine On
+RewriteBase /GridSenseAI/
+
+# Handle API requests
+RewriteRule ^api/auth/(.*)$ php/auth.php [L,QSA]
+RewriteRule ^api/power/(.*)$ php/power.php [L,QSA]
+
+# Handle front-end routes
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^dashboard$ dashboard.html [L]
+RewriteRule ^login$ login.html [L]
+
+# Redirect all other non-file requests to index.html
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.html [L]
+
+# Enable CORS
+Header set Access-Control-Allow-Origin "*"
