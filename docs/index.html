@@ -4,9 +4,123 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GridSenseAI - Smart Energy Monitoring</title>
-    <meta http-equiv="refresh" content="0;url=../index.html">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Force deployment update -->
 </head>
 <body>
-    <p>Redirecting to <a href="../index.html">home page</a>...</p>
+    <nav class="navbar">
+        <div class="logo">
+            <svg class="logo-icon" width="40" height="40" viewBox="0 0 40 40">
+                <!-- Main Circle -->
+                <circle cx="20" cy="20" r="19" fill="none" stroke="#1a237e" stroke-width="2"/>
+                
+                <!-- Energy Bolt -->
+                <path d="M20 10l-6 10h6l-2 10l8-12h-6l4-8z" fill="#00b894"/>
+                
+                <!-- Pulse Effect -->
+                <circle cx="20" cy="20" r="12" fill="none" stroke="#1a237e" stroke-width="0.5" opacity="0.2">
+                    <animate attributeName="r" values="12;14;12" dur="2s" repeatCount="indefinite"/>
+                    <animate attributeName="opacity" values="0.2;0.1;0.2" dur="2s" repeatCount="indefinite"/>
+                </circle>
+            </svg>
+            <span>GridSenseAI</span>
+        </div>
+        <div class="nav-links">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="dashboard.html#insights">Insights</a>
+            <a href="dashboard.html#tutorials">Tutorials</a>
+            <a href="login.html" class="login-btn">Login</a>
+            <a href="login.html" class="signup-btn">Sign Up</a>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="hero-content">
+            <h1>Smart Energy Monitoring with AI</h1>
+            <p>Take control of your home's energy consumption with real-time monitoring and AI-powered insights.</p>
+            <a href="login.html" class="cta-button">Get Started</a>
+        </div>
+    </header>
+
+    <main>
+        <section id="features" class="features">
+            <h2>Key Features</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <i class="fas fa-chart-line"></i>
+                    <h3>Real-time Monitoring</h3>
+                    <p>Track power usage of individual devices in real-time.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-brain"></i>
+                    <h3>AI Insights</h3>
+                    <p>Get smart recommendations to optimize energy consumption.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-bell"></i>
+                    <h3>Smart Alerts</h3>
+                    <p>Receive notifications for unusual power consumption.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-video"></i>
+                    <h3>Video Tutorials</h3>
+                    <p>Learn energy-saving tips through our video guides.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="dashboard" class="dashboard">
+            <h2>Power Usage Dashboard</h2>
+            <div class="dashboard-preview">
+                <div class="usage-chart">
+                    <!-- Chart will be rendered here by JavaScript -->
+                </div>
+                <div class="device-list">
+                    <div class="device-item">
+                        <span class="device-name">TV</span>
+                        <span class="device-usage">80W</span>
+                    </div>
+                    <div class="device-item">
+                        <span class="device-name">Refrigerator</span>
+                        <span class="device-usage">150W</span>
+                    </div>
+                    <div class="device-item">
+                        <span class="device-name">AC</span>
+                        <span class="device-usage">1200W</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>GridSenseAI</h4>
+                <p>Smart energy monitoring for a sustainable future.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <a href="#features">Features</a>
+                <a href="#dashboard">Dashboard</a>
+                <a href="#contact">Contact</a>
+            </div>
+            <div class="footer-section">
+                <h4>Connect</h4>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 GridSenseAI. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
 </body>
 </html>

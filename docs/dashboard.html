@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GridSenseAI - Smart Energy Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Demo data for the dashboard
+        const demoData = {
+            totalPower: 850,
+            devices: [
+                { name: "Air Conditioner", power: 400, status: "on" },
+                { name: "Refrigerator", power: 150, status: "on" },
+                { name: "TV", power: 100, status: "off" },
+                { name: "Washing Machine", power: 200, status: "off" }
+            ]
+        };
+
+        window.onload = function() {
+            // Update total power
+            document.getElementById('totalPower').textContent = demoData.totalPower;
+            
+            // Update devices list
+            const devicesList = document.getElementById('devicesList');
+            demoData.devices.forEach(device => {
+                const deviceHtml = `
+                    <div class="device-card">
+                        <div class="device-header">
+                            <h3>${device.name}</h3>
+                            <div class="device-status ${device.status}">
+                                <span class="status-dot"></span>
+                                ${device.status.toUpperCase()}
+                            </div>
+                        </div>
+                        <div class="device-content">
+                            <div class="device-power">
+                                <span class="power-value">${device.power}</span>
+                                <span class="power-unit">W</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                devicesList.innerHTML += deviceHtml;
+            });
+        };
+    </script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">
+            <svg class="logo-icon" width="40" height="40" viewBox="0 0 40 40">
+                <circle cx="20" cy="20" r="19" fill="none" stroke="#1a237e" stroke-width="2"/>
+                <path d="M20 10l-6 10h6l-2 10l8-12h-6l4-8z" fill="#00b894"/>
+                <circle cx="20" cy="20" r="12" fill="none" stroke="#1a237e" stroke-width="0.5" opacity="0.2">
+                    <animate attributeName="r" values="12;14;12" dur="2s" repeatCount="indefinite"/>
+                    <animate attributeName="opacity" values="0.2;0.1;0.2" dur="2s" repeatCount="indefinite"/>
+                </circle>
+            </svg>
+            <span>GridSenseAI</span>
+        </div>
+        <div class="nav-links">
+            <a href="#overview" class="active">Overview</a>
+            <a href="#devices">Devices</a>
+            <a href="#insights">Insights</a>
+            <a href="#settings">Settings</a>
+            <a href="index.html" class="logout-btn">Logout</a>
+        </div>
+    </nav>
+
+    <main class="dashboard-container">
+        <!-- Overview Section -->
+        <section id="overview" class="dashboard-section">
+            <h2>Power Usage Overview</h2>
+            <div class="overview-grid">
+                <!-- Total Power Usage Card -->
+                <div class="card total-power">
+                    <div class="card-header">
+                        <h3>Total Power Usage</h3>
+                        <span class="timestamp">Updated: <span id="lastUpdate">Just now</span></span>
+                    </div>
+                    <div class="card-content">
+                        <div class="power-reading">
+                            <span id="totalPower">0</span>
+                            <span class="unit">W</span>
+                        </div>
+                        <div class="power-trend">
+                            <span id="powerTrend">0%</span>
+                            <span>vs last hour</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Daily Usage Card -->
+                <div class="card daily-usage">
+                    <div class="card-header">
+                        <h3>Today's Usage</h3>
+                        <div class="card-actions">
+                            <button class="btn-icon" onclick="refreshDailyUsage()">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <canvas id="dailyUsageChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Peak Hours Card -->
+                <div class="card peak-hours">
+                    <div class="card-header">
+                        <h3>Peak Hours</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="peak-hours-chart">
+                            <canvas id="peakHoursChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Credit Settings Section -->
+        <section id="creditSettings" class="dashboard-section">
+            <div class="section-header">
+                <h2>Power Credit</h2>
+                <button class="btn-primary" onclick="openCreditSettingsModal()">
+                    <i class="fas fa-cog"></i> Settings
+                </button>
+            </div>
+            <div class="credit-info">
+                <div class="credit-balance">
+                    <h3>Remaining Credit</h3>
+                    <p><span id="remainingCredit">1000</span> kWh</p>
+                </div>
+                <div class="credit-threshold">
+                    <h3>Alert Threshold</h3>
+                    <p><span id="creditThreshold">100</span> kWh</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Credit Settings Modal -->
+        <div id="creditSettingsModal" class="modal">
+            <div class="modal-content">
+                <span class="close-btn" onclick="closeCreditSettingsModal()">&times;</span>
+                <h2>Credit Alert Settings</h2>
+                <form id="creditSettingsForm" onsubmit="return updateCreditSettings(event)">
+                    <div class="form-group">
+                        <label for="alertThreshold">Alert me when credit falls below (kWh):</label>
+                        <input type="number" id="alertThreshold" min="10" max="1000" required>
+                    </div>
+                    <button type="submit" class="btn-primary">Save Settings</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Devices Section -->
+        <section id="devices" class="dashboard-section">
+            <div class="section-header">
+                <h2>Connected Devices</h2>
+                <button class="btn-primary" onclick="openAddDeviceModal()">
+                    <i class="fas fa-plus"></i> Add Device
+                </button>
+            </div>
+            
+            <div class="devices-grid" id="devicesList">
+                <!-- Devices will be added by JavaScript -->
+            </div>
+        </section>
+
+        <!-- Add Device Modal -->
+        <div id="addDeviceModal" class="modal">
+            <div class="modal-content">
+                <span class="close-btn" onclick="closeAddDeviceModal()">&times;</span>
+                <h2>Add New Device</h2>
+                <form id="addDeviceForm" onsubmit="return addDevice(event)">
+                    <div class="form-group">
+                        <label for="deviceName">Device Name</label>
+                        <input type="text" id="deviceName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="deviceType">Device Type</label>
+                        <select id="deviceType" required>
+                            <option value="HVAC">HVAC</option>
+                            <option value="Lighting">Lighting</option>
+                            <option value="Appliance">Appliance</option>
+                            <option value="Electronics">Electronics</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="maxPower">Maximum Power Rating (Watts)</label>
+                        <input type="number" id="maxPower" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="location">Location</label>
+                        <input type="text" id="location" required>
+                    </div>
+                    <button type="submit" class="btn-primary">Add Device</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- AI Insights Section -->
+        <section id="insights" class="dashboard-section">
+            <div class="section-header">
+                <h2>AI-Powered Insights</h2>
+                <button class="btn-primary" onclick="refreshInsights()">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+            </div>
+            <div class="insights-grid" id="insightsList">
+                <!-- Insights will be populated by JavaScript -->
+            </div>
+        </section>
+
+        <!-- Video Section -->
+        <section id="tutorials" class="dashboard-section">
+            <div class="section-header">
+                <h2>Energy Saving Tutorials</h2>
+            </div>
+            <div class="video-grid">
+                <div class="video-card">
+                    <div class="video-container">
+                        <iframe src="https://www.youtube.com/embed/l_3YLJCOkeM" 
+                            title="Cut Your Electric Bill: 33 Creative Savings Tips" 
+                            frameborder="0" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+                    <div class="video-info">
+                        <h3>Cut Your Electric Bill: 33 Creative Savings Tips</h3>
+                        <p>Discover surprising ways to slash your electric bill and keep your hard-earned money with these practical tips.</p>
+                    </div>
+                </div>
+
+                <div class="video-card">
+                    <div class="video-container">
+                        <iframe src="https://www.youtube.com/embed/HkHozg0ckWY" 
+                            title="20 Ways to Save Energy and MONEY around your Home" 
+                            frameborder="0" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+                    <div class="video-info">
+                        <h3>20 Ways to Save Energy at Home</h3>
+                        <p>Learn effective ways to make your home more energy efficient and reduce your monthly bills.</p>
+                    </div>
+                </div>
+
+                <div class="video-card">
+                    <div class="video-container">
+                        <iframe src="https://www.youtube.com/embed/pY6fAYkscTY" 
+                            title="Saving Energy at Home - Energy Efficiency Tips" 
+                            frameborder="0" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+                    <div class="video-info">
+                        <h3>Energy Efficiency Tips for Your Home</h3>
+                        <p>Simple, low-cost energy-saving tips that can help you reduce your energy consumption significantly.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Video Modal -->
+        <div id="videoModal" class="modal">
+            <div class="modal-content">
+                <span class="close-btn" onclick="closeVideo()">&times;</span>
+                <div class="video-container">
+                    <iframe id="videoPlayer" width="560" height="315" frameborder="0" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                            allowfullscreen></iframe>
+                </div>
+            </div>
+        </div>
+
+        <!-- Power Usage Alert Modal -->
+        <div id="alertModal" class="modal">
+            <div class="modal-content alert-content">
+                <span class="close-btn" onclick="closeAlertModal()">&times;</span>
+                <div class="alert-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <h2>Power Usage Alert</h2>
+                <p id="alertMessage"></p>
+                <div class="alert-actions">
+                    <button onclick="closeAlertModal()" class="btn-secondary">Dismiss</button>
+                    <button onclick="viewUsageDetails()" class="btn-primary">View Details</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/advice.js"></script>
+    <script src="js/tutorials.js"></script>
+</body>
+</html>
