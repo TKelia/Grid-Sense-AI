@@ -3,98 +3,110 @@ require_once 'config.php';
 
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST');
+header('Access-Control-Allow-Methods: POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 
-// Handle preflight requests
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
-    exit();
+    exit;
 }
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    http_response_code(405);
-    echo json_encode(['error' => 'Method not allowed']);
-    exit();
+function generateToken($user_id) {
+    $payload = [
+        'user_id' => $user_id,
+        'exp' => time() + (24 * 60 * 60) // 24 hours expiration
+    ];
+    return base64_encode(json_encode($payload));
 }
 
-// Get request body
-$data = json_decode(file_get_contents('php://input'), true);
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $conn = getDBConnection();
+    $data = json_decode(file_get_contents('php://input'), true);
+    $action = isset($data['action']) ? sanitizeInput($conn, $data['action']) : '';
 
-if (!isset($data['action'])) {
-    http_response_code(400);
-    echo json_encode(['error' => 'Action is required']);
-    exit();
+    switch ($action) {
+        case 'login':
+            if (!isset($data['username']) || !isset($data['password'])) {
+                jsonResponse(false, null, 'Missing credentials');
+            }
+
+            $username = sanitizeInput($conn, $data['username']);
+            $password = $data['password'];
+
+            $query = "SELECT user_id, password_hash FROM users WHERE username = ?";
+            $stmt = $conn->prepare($query);
+            $stmt->bind_param("s", $username);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            if ($row = $result->fetch_assoc()) {
+                if (password_verify($password, $row['password_hash'])) {
+                    $token = generateToken($row['user_id']);
+                    jsonResponse(true, ['token' => $token, 'user_id' => $row['user_id']]);
+                }
+            }
+            jsonResponse(false, null, 'Invalid credentials');
+            break;
+
+        case 'register':
+            if (!isset($data['username']) || !isset($data['password']) || !isset($data['email'])) {
+                jsonResponse(false, null, 'Missing required fields');
+            }
+
+            $username = sanitizeInput($conn, $data['username']);
+            $email = sanitizeInput($conn, $data['email']);
+            $password_hash = password_hash($data['password'], PASSWORD_DEFAULT);
+
+            // Check if username or email already exists
+            $query = "SELECT user_id FROM users WHERE username = ? OR email = ?";
+            $stmt = $conn->prepare($query);
+            $stmt->bind_param("ss", $username, $email);
+            $stmt->execute();
+            if ($stmt->get_result()->num_rows > 0) {
+                jsonResponse(false, null, 'Username or email already exists');
+            }
+
+            // Insert new user
+            $query = "INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)";
+            $stmt = $conn->prepare($query);
+            $stmt->bind_param("sss", $username, $email, $password_hash);
+            
+            if ($stmt->execute()) {
+                $user_id = $conn->insert_id;
+                
+                // Create default preferences
+                $query = "INSERT INTO user_preferences (user_id) VALUES (?)";
+                $stmt = $conn->prepare($query);
+                $stmt->bind_param("i", $user_id);
+                $stmt->execute();
+                
+                $token = generateToken($user_id);
+                jsonResponse(true, ['token' => $token, 'user_id' => $user_id]);
+            } else {
+                jsonResponse(false, null, 'Registration failed');
+            }
+            break;
+
+        default:
+            jsonResponse(false, null, 'Invalid action');
+    }
 }
 
-switch ($data['action']) {
-    case 'signup':
-        handleSignup($data);
-        break;
-    case 'login':
-        handleLogin($data);
-        break;
-    default:
-        http_response_code(400);
-        echo json_encode(['error' => 'Invalid action']);
+function sanitizeInput($conn, $input) {
+    return $conn->real_escape_string($input);
 }
 
-function handleSignup($data) {
-    if (!isset($data['email']) || !isset($data['password'])) {
-        http_response_code(400);
-        echo json_encode(['error' => 'Email and password are required']);
-        return;
+function jsonResponse($success, $data, $message = '') {
+    $response = [
+        'success' => $success,
+        'message' => $message
+    ];
+
+    if ($data !== null) {
+        $response['data'] = $data;
     }
 
-    $email = filter_var($data['email'], FILTER_VALIDATE_EMAIL);
-    if (!$email) {
-        http_response_code(400);
-        echo json_encode(['error' => 'Invalid email format']);
-        return;
-    }
-
-    // For demo purposes, just return success
-    // In production, you would:
-    // 1. Hash the password using password_hash()
-    // 2. Check if user exists in database
-    // 3. Store in database using prepared statements
-    // 4. Send verification email
     http_response_code(200);
-    echo json_encode([
-        'message' => 'Account created successfully',
-        'user' => ['email' => $email]
-    ]);
-}
-
-function handleLogin($data) {
-    if (!isset($data['email']) || !isset($data['password'])) {
-        http_response_code(400);
-        echo json_encode(['error' => 'Email and password are required']);
-        return;
-    }
-
-    $email = filter_var($data['email'], FILTER_VALIDATE_EMAIL);
-    if (!$email) {
-        http_response_code(400);
-        echo json_encode(['error' => 'Invalid email format']);
-        return;
-    }
-
-    // For demo purposes, accept any valid email/password
-    // In production, you would:
-    // 1. Verify credentials against database using password_verify()
-    // 2. Create a proper session with session_start()
-    // 3. Set secure session cookie with proper flags
-    // 4. Use HTTPS only
-    // 5. Implement rate limiting
-    // 6. Log authentication attempts
-    
-    session_start();
-    $_SESSION['user_email'] = $email;
-    
-    http_response_code(200);
-    echo json_encode([
-        'token' => 'demo-token-' . bin2hex(random_bytes(16)),
-        'user' => ['email' => $email]
-    ]);
+    echo json_encode($response);
+    exit;
 }

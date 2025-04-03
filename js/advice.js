@@ -1,5 +1,7 @@
+// AI-powered advice system
 class EnergyAdvisor {
     constructor() {
+        this.recommendationsList = document.getElementById('recommendationsList');
         this.adviceList = document.getElementById('adviceList');
         this.questionInput = document.getElementById('adviceQuestion');
         this.sendButton = document.getElementById('sendQuestion');
@@ -41,7 +43,13 @@ class EnergyAdvisor {
         this.init();
     }
 
-    init() {
+    async init() {
+        await this.loadRecommendations();
+        this.updateSavingsChart();
+        
+        // Refresh recommendations every 5 minutes
+        setInterval(() => this.loadRecommendations(), 300000);
+
         // Add welcome message
         this.addMessage({
             type: 'advisor',
@@ -55,6 +63,78 @@ class EnergyAdvisor {
                 this.handleQuestion();
             }
         });
+    }
+
+    async loadRecommendations() {
+        try {
+            const response = await fetch('/GridSenseAI/php/advice.php?action=recommendations');
+            const data = await response.json();
+
+            if (!data.success) {
+                throw new Error(data.error);
+            }
+
+            this.renderRecommendations(data.data);
+
+        } catch (error) {
+            console.error('Error loading recommendations:', error);
+            this.showError('Failed to load energy saving recommendations');
+        }
+    }
+
+    renderRecommendations(recommendations) {
+        if (!this.recommendationsList) return;
+
+        this.recommendationsList.innerHTML = recommendations.map(rec => `
+            <div class="recommendation-card">
+                <div class="recommendation-icon">
+                    <i class="fas ${this.getRecommendationIcon(rec.category)}"></i>
+                </div>
+                <div class="recommendation-content">
+                    <h4>${rec.title}</h4>
+                    <p>${rec.description}</p>
+                    <div class="recommendation-stats">
+                        <span class="savings">
+                            <i class="fas fa-bolt"></i>
+                            ${rec.potential_savings}% potential savings
+                        </span>
+                        <span class="difficulty ${rec.difficulty.toLowerCase()}">
+                            ${rec.difficulty}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    updateSavingsChart() {
+        if (!window.dashboard || !window.dashboard.charts.savings) return;
+
+        // Calculate potential savings (this would normally come from the backend)
+        const potentialSavings = Math.floor(Math.random() * 30) + 10; // 10-40%
+        
+        window.dashboard.charts.savings.data.datasets[0].data = [
+            potentialSavings,
+            100 - potentialSavings
+        ];
+        window.dashboard.charts.savings.update();
+    }
+
+    getRecommendationIcon(category) {
+        const icons = {
+            'HVAC': 'fa-temperature-high',
+            'Lighting': 'fa-lightbulb',
+            'Appliances': 'fa-plug',
+            'Behavior': 'fa-user',
+            'Schedule': 'fa-clock',
+            'Maintenance': 'fa-tools'
+        };
+        return icons[category] || 'fa-lightbulb';
+    }
+
+    showError(message) {
+        console.error(message);
+        // Implement error display logic here
     }
 
     handleQuestion() {
@@ -133,7 +213,158 @@ class EnergyAdvisor {
     }
 }
 
-// Initialize advisor when DOM is ready
+// AI Insights functionality
+const API_BASE_URL = 'http://localhost/GridSenseAI/php';
+
+// Icons for different insight types
+const INSIGHT_ICONS = {
+    peak_hours: 'fa-clock',
+    usage_spike: 'fa-bolt',
+    device_efficiency: 'fa-plug',
+    hvac_optimization: 'fa-snowflake',
+    appliance_usage: 'fa-home',
+    general_tip: 'fa-lightbulb'
+};
+
+// Colors for different impact levels
+const IMPACT_COLORS = {
+    high: '#d63031',
+    medium: '#fdcb6e',
+    low: '#00b894'
+};
+
+// Fetch and display insights
+const refreshInsights = async () => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/advice.php`);
+        const result = await response.json();
+        
+        if (!result.success) {
+            throw new Error(result.message || 'Failed to fetch insights');
+        }
+        
+        const insights = result.data;
+        displayInsights(insights);
+        
+    } catch (error) {
+        console.error('Error fetching insights:', error);
+        // Show error notification
+    }
+};
+
+// Display insights in the UI
+const displayInsights = (insights) => {
+    const insightsList = document.getElementById('insightsList');
+    if (!insightsList) return;
+    
+    insightsList.innerHTML = '';
+    
+    insights.forEach(insight => {
+        const card = document.createElement('div');
+        card.className = 'insight-card';
+        card.innerHTML = `
+            <div class="insight-icon" style="color: ${IMPACT_COLORS[insight.impact]}">
+                <i class="fas ${INSIGHT_ICONS[insight.type] || 'fa-info-circle'}"></i>
+            </div>
+            <div class="insight-content">
+                <h3>${insight.title}</h3>
+                <p>${insight.description}</p>
+                <div class="insight-meta">
+                    <span class="impact-badge" style="background: ${IMPACT_COLORS[insight.impact]}">
+                        ${insight.impact.charAt(0).toUpperCase() + insight.impact.slice(1)} Impact
+                    </span>
+                    <span class="saving-badge">
+                        <i class="fas fa-piggy-bank"></i>
+                        Save up to ${insight.potential_saving}
+                    </span>
+                </div>
+            </div>
+        `;
+        
+        insightsList.appendChild(card);
+    });
+};
+
+// Initialize advisor when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     window.energyAdvisor = new EnergyAdvisor();
+    refreshInsights();
+    // Refresh insights every 5 minutes
+    setInterval(refreshInsights, 300000);
+});
+
+// AI-Powered Insights
+class EnergyInsights {
+    constructor() {
+        this.threshold = 1000; // Threshold for high usage alert
+    }
+
+    analyzeUsage(devices) {
+        console.log('Analyzing usage for devices:', devices); // Log the devices being analyzed
+        console.log('Insights analysis started.');
+        let totalPower = 0;
+        let highUsageDevices = [];
+
+        devices.forEach(device => {
+            totalPower += device.power;
+            if (device.power > this.threshold) {
+                highUsageDevices.push(device);
+            }
+        });
+
+        console.log('Total power:', totalPower); // Log total power
+        console.log('High usage devices:', highUsageDevices); // Log high usage devices
+
+        this.displayAlerts(totalPower, highUsageDevices);
+        this.suggestEnergySavingTips(highUsageDevices);
+    }
+
+    displayAlerts(totalPower, highUsageDevices) {
+        if (totalPower > this.threshold) {
+            console.warn('High Usage Alert: Your total power usage is high! Current usage: ' + totalPower + 'W.');
+            // Display alert in the UI
+            this.showAlert('High Usage Alert', 'Your total power usage is ' + totalPower + 'W, which exceeds the recommended limit.');
+        }
+
+        if (highUsageDevices.length > 0) {
+            highUsageDevices.forEach(device => {
+                this.showAlert('High Usage Device', device.name + ' is consuming ' + device.power + 'W. Consider reducing usage.');
+            });
+        }
+    }
+
+    suggestEnergySavingTips(highUsageDevices) {
+        highUsageDevices.forEach(device => {
+            let tip = '';
+            switch (device.type) {
+                case 'HVAC':
+                    tip = 'Consider setting your thermostat a few degrees higher in summer and lower in winter.';
+                    break;
+                case 'Appliance':
+                    tip = 'Make sure appliances are energy-efficient and used during off-peak hours.';
+                    break;
+                case 'Entertainment':
+                    tip = 'Turn off devices when not in use.';
+                    break;
+                default:
+                    tip = 'Monitor your usage and consider energy-efficient alternatives.';
+            }
+            this.showTip(device.name, tip);
+        });
+    }
+
+    showAlert(title, message) {
+        // Implement UI alert display
+        console.log(title + ': ' + message);
+    }
+
+    showTip(deviceName, tip) {
+        // Implement UI tip display
+        console.log('Tip for ' + deviceName + ': ' + tip);
+    }
+}
+
+// Initialize insights when the page loads
+document.addEventListener('DOMContentLoaded', () => {
+    window.energyInsights = new EnergyInsights();
 });

@@ -340,6 +340,65 @@ class EnergyTutorialManager {
     }
 }
 
+// Video tutorials functionality
+const YOUTUBE_EMBED_URL = 'https://www.youtube.com/embed/';
+
+// Play video in modal
+function playVideo(videoId) {
+    const modal = document.getElementById('videoModal');
+    const player = document.getElementById('videoPlayer');
+    
+    // Set video source
+    player.src = `${YOUTUBE_EMBED_URL}${videoId}?autoplay=1`;
+    
+    // Show modal
+    modal.style.display = 'flex';
+    
+    // Add event listener to close modal when clicking outside
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeVideo();
+        }
+    });
+    
+    // Add keyboard event listener to close modal on ESC key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeVideo();
+        }
+    });
+}
+
+// Close video modal
+function closeVideo() {
+    const modal = document.getElementById('videoModal');
+    const player = document.getElementById('videoPlayer');
+    
+    // Stop video playback
+    player.src = '';
+    
+    // Hide modal
+    modal.style.display = 'none';
+}
+
+// Initialize video thumbnails lazy loading
+document.addEventListener('DOMContentLoaded', () => {
+    const thumbnails = document.querySelectorAll('.video-thumbnail img');
+    
+    // Use Intersection Observer for lazy loading
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const img = entry.target;
+                img.src = img.src; // Trigger load
+                observer.unobserve(img);
+            }
+        });
+    });
+    
+    thumbnails.forEach(img => observer.observe(img));
+});
+
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
     new TutorialManager();
