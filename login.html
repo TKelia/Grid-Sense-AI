@@ -3,137 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - GridSenseAI</title>
+    <title>GridSenseAI - Login</title>
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/auth.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        function handleLogin(event) {
+            event.preventDefault();
+            // For demo purposes, accept any login
+            window.location.href = 'dashboard.html';
+        }
+    </script>
 </head>
 <body>
-    <nav class="navbar">
-        <div class="logo">
-            <svg class="logo-icon" width="40" height="40" viewBox="0 0 40 40">
-                <!-- Main Circle -->
-                <circle cx="20" cy="20" r="19" fill="none" stroke="#1a237e" stroke-width="2"/>
-                
-                <!-- Energy Bolt -->
-                <path d="M20 10l-6 10h6l-2 10l8-12h-6l4-8z" fill="#00b894"/>
-                
-                <!-- Pulse Effect -->
-                <circle cx="20" cy="20" r="12" fill="none" stroke="#1a237e" stroke-width="0.5" opacity="0.2">
-                    <animate attributeName="r" values="12;14;12" dur="2s" repeatCount="indefinite"/>
-                    <animate attributeName="opacity" values="0.2;0.1;0.2" dur="2s" repeatCount="indefinite"/>
-                </circle>
-            </svg>
-            <span>GridSenseAI</span>
-        </div>
-        <a href="index.html" class="back-home">Back to Home</a>
-    </nav>
-
-    <main class="auth-container">
+    <div class="auth-container">
         <div class="auth-box">
-            <div class="auth-tabs">
-                <button class="auth-tab active" data-tab="login">Login</button>
-                <button class="auth-tab" data-tab="signup">Sign Up</button>
+            <div class="logo">
+                <svg class="logo-icon" width="40" height="40" viewBox="0 0 40 40">
+                    <circle cx="20" cy="20" r="19" fill="none" stroke="#1a237e" stroke-width="2"/>
+                    <path d="M20 10l-6 10h6l-2 10l8-12h-6l4-8z" fill="#00b894"/>
+                </svg>
+                <h1>GridSenseAI</h1>
             </div>
-
-            <form id="loginForm" class="auth-form active" novalidate>
+            <form onsubmit="handleLogin(event)">
                 <div class="form-group">
-                    <label for="loginEmail">Email</label>
-                    <input type="email" id="loginEmail" required>
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
                 </div>
                 <div class="form-group">
-                    <label for="loginPassword">Password</label>
-                    <div class="password-input">
-                        <input type="password" id="loginPassword" required>
-                        <button type="button" class="toggle-password">
-                            <i class="far fa-eye"></i>
-                        </button>
-                    </div>
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
                 </div>
-                <div class="form-group">
-                    <label class="remember-me">
-                        <input type="checkbox" id="rememberMe">
-                        <span>Remember me</span>
-                    </label>
-                    <a href="#" class="forgot-password">Forgot Password?</a>
-                </div>
-                <button type="submit" class="auth-submit">Login</button>
+                <button type="submit" class="btn-primary">Login</button>
             </form>
-
-            <form id="signupForm" class="auth-form" novalidate>
-                <div class="form-group">
-                    <label for="signupEmail">Email</label>
-                    <input type="email" id="signupEmail" required>
-                </div>
-                <div class="form-group">
-                    <label for="signupPassword">Password</label>
-                    <div class="password-input">
-                        <input type="password" id="signupPassword" required>
-                        <button type="button" class="toggle-password">
-                            <i class="far fa-eye"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="confirmPassword">Confirm Password</label>
-                    <div class="password-input">
-                        <input type="password" id="confirmPassword" required>
-                        <button type="button" class="toggle-password">
-                            <i class="far fa-eye"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="terms">
-                        <input type="checkbox" id="agreeTerms" required>
-                        <span>I agree to the <a href="#">Terms & Conditions</a></span>
-                    </label>
-                </div>
-                <button type="submit" class="auth-submit">Create Account</button>
-            </form>
+            <p class="auth-links">
+                Don't have an account? <a href="register.html">Sign up</a>
+            </p>
         </div>
-    </main>
-
-    <div id="notificationContainer" class="notification-container"></div>
-
-    <script src="js/auth.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Handle tab switching
-            document.querySelectorAll('.auth-tab').forEach(tab => {
-                tab.addEventListener('click', () => {
-                    document.querySelectorAll('.auth-tab, .auth-form').forEach(el => el.classList.remove('active'));
-                    tab.classList.add('active');
-                    document.getElementById(tab.dataset.tab + 'Form').classList.add('active');
-                });
-            });
-
-            // Handle password visibility toggle
-            document.querySelectorAll('.toggle-password').forEach(button => {
-                button.addEventListener('click', () => {
-                    const input = button.parentElement.querySelector('input');
-                    const icon = button.querySelector('i');
-                    if (input.type === 'password') {
-                        input.type = 'text';
-                        icon.classList.replace('fa-eye', 'fa-eye-slash');
-                    } else {
-                        input.type = 'password';
-                        icon.classList.replace('fa-eye-slash', 'fa-eye');
-                    }
-                });
-            });
-
-            // Prevent form submission on Enter key
-            document.querySelectorAll('form').forEach(form => {
-                form.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') {
-                        e.preventDefault();
-                        form.querySelector('button[type="submit"]').click();
-                    }
-                });
-            });
-        });
-    </script>
+    </div>
 </body>
 </html>

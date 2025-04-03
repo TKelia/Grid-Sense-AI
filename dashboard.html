@@ -8,7 +8,46 @@
     <link rel="stylesheet" href="css/dashboard.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="js/dashboard.js"></script>
+    <script>
+        // Demo data for the dashboard
+        const demoData = {
+            totalPower: 850,
+            devices: [
+                { name: "Air Conditioner", power: 400, status: "on" },
+                { name: "Refrigerator", power: 150, status: "on" },
+                { name: "TV", power: 100, status: "off" },
+                { name: "Washing Machine", power: 200, status: "off" }
+            ]
+        };
+
+        window.onload = function() {
+            // Update total power
+            document.getElementById('totalPower').textContent = demoData.totalPower;
+            
+            // Update devices list
+            const devicesList = document.getElementById('devicesList');
+            demoData.devices.forEach(device => {
+                const deviceHtml = `
+                    <div class="device-card">
+                        <div class="device-header">
+                            <h3>${device.name}</h3>
+                            <div class="device-status ${device.status}">
+                                <span class="status-dot"></span>
+                                ${device.status.toUpperCase()}
+                            </div>
+                        </div>
+                        <div class="device-content">
+                            <div class="device-power">
+                                <span class="power-value">${device.power}</span>
+                                <span class="power-unit">W</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                devicesList.innerHTML += deviceHtml;
+            });
+        };
+    </script>
 </head>
 <body>
     <nav class="navbar">
