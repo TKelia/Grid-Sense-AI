@@ -4,41 +4,144 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GridSenseAI - Login</title>
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="css/auth.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1a73e8;
+            --secondary-color: #34a853;
+            --background-color: #f8f9fa;
+            --text-color: #202124;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--background-color);
+        }
+
+        .login-container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-header img {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 1rem;
+        }
+
+        .login-header h1 {
+            margin: 0;
+            color: var(--text-color);
+            font-size: 1.5rem;
+        }
+
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        .form-group input {
+            padding: 0.8rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .login-button {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .login-button:hover {
+            background-color: #1557b0;
+        }
+
+        .login-links {
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .login-links a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .login-links a:hover {
+            text-decoration: underline;
+        }
+    </style>
     <script>
         function handleLogin(event) {
             event.preventDefault();
-            // For demo purposes, accept any login
             window.location.href = 'dashboard.html';
         }
     </script>
 </head>
 <body>
-    <div class="auth-container">
-        <div class="auth-box">
-            <div class="logo">
-                <svg class="logo-icon" width="40" height="40" viewBox="0 0 40 40">
-                    <circle cx="20" cy="20" r="19" fill="none" stroke="#1a237e" stroke-width="2"/>
-                    <path d="M20 10l-6 10h6l-2 10l8-12h-6l4-8z" fill="#00b894"/>
-                </svg>
-                <h1>GridSenseAI</h1>
-            </div>
-            <form onsubmit="handleLogin(event)">
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" name="email" required>
-                </div>
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" name="password" required>
-                </div>
-                <button type="submit" class="btn-primary">Login</button>
-            </form>
-            <p class="auth-links">
-                Don't have an account? <a href="register.html">Sign up</a>
-            </p>
+    <div class="login-container">
+        <div class="login-header">
+            <svg class="logo-icon" width="40" height="40" viewBox="0 0 40 40">
+                <circle cx="20" cy="20" r="19" fill="none" stroke="#1a237e" stroke-width="2"/>
+                <path d="M20 10l-6 10h6l-2 10l8-12h-6l4-8z" fill="#00b894"/>
+            </svg>
+            <h1>GridSenseAI</h1>
         </div>
+        <form class="login-form" onsubmit="handleLogin(event)">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit" class="login-button">Login</button>
+        </form>
+        <p class="login-links">
+            Don't have an account? <a href="register.html">Sign up</a>
+        </p>
     </div>
 </body>
 </html>

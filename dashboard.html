@@ -3,11 +3,181 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GridSenseAI - Smart Energy Dashboard</title>
+    <title>GridSenseAI - Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="css/dashboard.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #1a73e8;
+            --secondary-color: #34a853;
+            --background-color: #f8f9fa;
+            --text-color: #202124;
+            --border-color: #e0e0e0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+
+        .navbar {
+            background-color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        main {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .card h2 {
+            margin-top: 0;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+            color: var(--text-color);
+        }
+
+        .device-list {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .device-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background-color: var(--background-color);
+            border-radius: 4px;
+        }
+
+        .device-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .device-icon {
+            width: 40px;
+            height: 40px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .device-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .status-on {
+            background-color: var(--secondary-color);
+        }
+
+        .status-off {
+            background-color: #dc3545;
+        }
+
+        .chart-container {
+            width: 100%;
+            height: 300px;
+        }
+
+        .recommendations {
+            margin-top: 2rem;
+        }
+
+        .recommendation-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .recommendation-card h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+        }
+
+        .tutorials {
+            margin-top: 2rem;
+        }
+
+        .tutorial-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .tutorial-thumbnail {
+            width: 120px;
+            height: 80px;
+            background-color: var(--background-color);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tutorial-info h3 {
+            margin: 0;
+            margin-bottom: 0.5rem;
+        }
+
+        .tutorial-info p {
+            margin: 0;
+            color: #5f6368;
+        }
+    </style>
     <script>
         // Demo data for the dashboard
         const demoData = {
@@ -300,7 +470,7 @@
         </div>
     </main>
 
-    <script src="js/advice.js"></script>
-    <script src="js/tutorials.js"></script>
+    <script src="./js/advice.js"></script>
+    <script src="./js/tutorials.js"></script>
 </body>
 </html>

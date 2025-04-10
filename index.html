@@ -5,9 +5,151 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GridSenseAI - Smart Energy Monitoring</title>
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/auth.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Force deployment update -->
+    <style>
+        :root {
+            --primary-color: #1a73e8;
+            --secondary-color: #34a853;
+            --background-color: #f8f9fa;
+            --text-color: #202124;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+
+        .navbar {
+            background-color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        .logo img {
+            width: 32px;
+            height: 32px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 500;
+        }
+
+        .hero {
+            padding: 4rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-color);
+        }
+
+        p {
+            font-size: 1.1rem;
+            color: #5f6368;
+            margin-bottom: 2rem;
+        }
+
+        .get-started {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.8rem 2rem;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+        .get-started:hover {
+            background-color: #1557b0;
+        }
+
+        .features {
+            padding: 4rem 2rem;
+            background-color: white;
+        }
+
+        .features h2 {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            padding: 1.5rem;
+            border-radius: 8px;
+            background-color: var(--background-color);
+            transition: transform 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-card i {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-card p {
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        .dashboard {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .power-chart {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar">
@@ -40,7 +182,7 @@
         <div class="hero-content">
             <h1>Smart Energy Monitoring with AI</h1>
             <p>Take control of your home's energy consumption with real-time monitoring and AI-powered insights.</p>
-            <a href="login.html" class="cta-button">Get Started</a>
+            <a href="login.html" class="get-started">Get Started</a>
         </div>
     </header>
 
@@ -74,7 +216,7 @@
         <section id="dashboard" class="dashboard">
             <h2>Power Usage Dashboard</h2>
             <div class="dashboard-preview">
-                <div class="usage-chart">
+                <div class="power-chart">
                     <!-- Chart will be rendered here by JavaScript -->
                 </div>
                 <div class="device-list">
